@@ -1,12 +1,70 @@
-//const expect = require('chai').expect;
+const expect = require('chai').expect;
+const createServer = require('../lib/createServer');
+const http = require('http');
+const url = require('url');
 
 describe('createServer', () => {
+  var server, s1, s2;
 
-  it('should raise a error because argument is missing');
+  before(done => {
+    s1 = http.createServer((req, res) => {
+      res.write('service 1');
+      res.end();
+    });
+    s2 = http.createServer((req, res) => {
+      res.write('service 2');
+      res.end();
+    });
+    s1.listen(3000, ()=> {
+      s2.listen(3001, done);
+    });
+  });
 
-  it('should raise a error because no urls specified');
+  after(done => {
+    s1.close(() => {
+      s2.close(done);
+    });
+  });
 
-  it('should forward over one service');
+  afterEach(done => {
+    if(server && server.close){
+      server.close(done);
+    }else{
+      done();
+    }
+  });
+
+
+
+  it('should raise a error because argument is missing', () => {
+    expect(() => {
+      createServer();
+    }).to.throw(Error);
+  });
+
+  it('should raise a error because no urls specified', () => {
+    expect(() => {
+      createServer([]);
+    }).to.throw(Error);
+  });
+
+  it('should raise a error because of bad arguments type', () => {
+    expect(() => {
+      createServer({});
+    }).to.throw(Error);
+  });
+
+  it('should forward over one service', (done) => {
+    server = createServer(['http://localhost:3000/']);
+    server.listen(4000, () => {
+      var options = url.parse('http://localhost:4000/');
+      var query = http.request(options);
+      query.end();
+    });
+    s1.once('request', () => {
+      done();
+    });
+  });
 
   it('should forward over 2 services');
 
