@@ -1,0 +1,33 @@
+{
+  "name": "http-broadcaster",
+  "version": "0.0.1",
+  "description": "HTTP server forward query over multiple services. Return merged statuses code as a JSON",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lightstream-company/http-broadcaster.git"
+  },
+  "keywords": [
+    "http",
+    "query",
+    "broadcast",
+    "forward",
+    "spread"
+  ],
+  "author": "Franck Ernewein",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lightstream-company/http-broadcaster/issues"
+  },
+  "homepage": "https://github.com/lightstream-company/http-broadcaster#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
+  }
+}
