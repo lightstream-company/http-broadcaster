@@ -66,7 +66,23 @@ describe('createServer', () => {
     });
   });
 
-  it('should forward over 2 services');
+  it('should forward over 2 services', (done) => {
+    var t1, t2;
+    server = createServer(['http://localhost:3000/', 'http://localhost:3001/']);
+    server.listen(4000, () => {
+      var options = url.parse('http://localhost:4000/');
+      var query = http.request(options);
+      query.end();
+    });
+    s1.once('request', () => {
+      t1 = true;
+      if(t1 && t2) done();
+    });
+    s1.once('request', () => {
+      t2 = true;
+      if(t1 && t2) done();
+    });
+  });
 
   it('should get receive status 200');
 
