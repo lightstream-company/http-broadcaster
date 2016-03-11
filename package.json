@@ -31,6 +31,7 @@
     "mocha": "^2.4.5"
   },
   "dependencies": {
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.0",
+    "url-join": "0.0.1"
   }
 }

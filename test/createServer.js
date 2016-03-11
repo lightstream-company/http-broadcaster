@@ -4,7 +4,9 @@ const http = require('http');
 const url = require('url');
 
 describe('createServer', () => {
-  var server, s1, s2;
+  var server,
+    s1,
+    s2;
 
   before(done => {
     s1 = http.createServer((req, res) => {
@@ -15,7 +17,7 @@ describe('createServer', () => {
       res.write('service 2');
       res.end();
     });
-    s1.listen(3000, ()=> {
+    s1.listen(3000, () => {
       s2.listen(3001, done);
     });
   });
@@ -27,9 +29,9 @@ describe('createServer', () => {
   });
 
   afterEach(done => {
-    if(server && server.close){
+    if (server && server.close) {
       server.close(done);
-    }else{
+    } else {
       done();
     }
   });
@@ -67,7 +69,8 @@ describe('createServer', () => {
   });
 
   it('should forward over 2 services', (done) => {
-    var t1, t2;
+    var t1,
+      t2;
     server = createServer(['http://localhost:3000/', 'http://localhost:3001/']);
     server.listen(4000, () => {
       var options = url.parse('http://localhost:4000/');
@@ -76,11 +79,24 @@ describe('createServer', () => {
     });
     s1.once('request', () => {
       t1 = true;
-      if(t1 && t2) done();
+      if (t1 && t2) done();
     });
     s1.once('request', () => {
       t2 = true;
-      if(t1 && t2) done();
+      if (t1 && t2) done();
+    });
+  });
+
+  it('should conserve path', done => {
+    server = createServer(['http://localhost:3000/']);
+    server.listen(4000, () => {
+      var options = url.parse('http://localhost:4000/custom_url');
+      var query = http.request(options);
+      query.end();
+    });
+    s1.once('request', (request) => {
+      expect(request.url).to.be.equal('/custom_url');
+      done();
     });
   });
 
