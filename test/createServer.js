@@ -37,7 +37,6 @@ describe('createServer', () => {
   });
 
 
-
   it('should raise a error because argument is missing', () => {
     expect(() => {
       createServer();
