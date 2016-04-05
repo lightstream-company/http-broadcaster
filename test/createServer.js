@@ -99,7 +99,17 @@ describe('createServer', () => {
     });
   });
 
-  it('should get receive status 200');
+  it('should get receive status 200', done => {
+    server = createServer(['http://localhost:3000/']);
+    server.listen(4000, () => {
+      var options = url.parse('http://localhost:4000/custom_url');
+      var query = http.request(options, response => {
+        expect(response.statusCode).to.be.equal(200);
+        done();
+      });
+      query.end();
+    });
+  });
 
   it('should get receive status 500');
 
