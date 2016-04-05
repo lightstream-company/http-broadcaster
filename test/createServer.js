@@ -103,6 +103,14 @@ describe('createServer', () => {
     });
   });
 
+  it('should forward over 2 services (one down)', (done) => {
+    server = createServer(['http://server-down/', 'http://localhost:3001/']);
+    listenAndPost();
+    s2.once('request', () => {
+      done();
+    });
+  });
+
   it('should conserve path', done => {
     server = createServer(['http://localhost:3000/']);
     server.listen(4000, () => {
