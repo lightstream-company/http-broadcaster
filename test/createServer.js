@@ -111,8 +111,33 @@ describe('createServer', () => {
     });
   });
 
-  it('should get receive status 500');
+  it('should get receive status 500 on unknow server', done => {
+    server = createServer(['http://unexisting-url/']);
+    server.listen(4000, () => {
+      var options = url.parse('http://localhost:4000/');
+      var query = http.request(options, response => {
+        expect(response.statusCode).to.be.equal(500);
+        done();
+      });
+      query.end();
+    });
+  });
 
-  it('should get receive status NETWORK_ERROR');
+  it('should get receive status ENOTFOUND in JSON', done => {
+    server = createServer(['http://unexisting-url/']);
+    server.listen(4000, () => {
+      var options = url.parse('http://localhost:4000/');
+      var query = http.request(options, response => {
+        var body = '';
+        response.on('data', chunk => body += chunk);
+        response.on('end', () => {
+          const data = JSON.parse(body);
+          expect(data['http://unexisting-url/'].body.code).to.be.equal('ENOTFOUND');
+          done();
+        });
+      });
+      query.end();
+    });
+  });
 
 });
