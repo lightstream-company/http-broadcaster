@@ -1,4 +1,6 @@
 const expect = require('chai').expect;
+const path = require('path');
+const child_process = require('child_process');
 const createServer = require('../lib/createServer');
 const http = require('http');
 const url = require('url');
@@ -137,6 +139,30 @@ describe('createServer', () => {
         });
       });
       query.end();
+    });
+  });
+
+  it('should get receive an answer even if the server crash during the request', done => {
+    const child = child_process.fork(path.join(__dirname , '../util/crashingServer'), [], {
+      silent: true
+    });
+    child.once('message', message => {
+      expect(message).to.be.equal('ready');
+      server = createServer(['http://localhost:5000/']);
+      server.listen(4000, () => {
+        var options = url.parse('http://localhost:4000/');
+        const query = http.request(options, response => {
+          expect(response.statusCode).to.be.equal(200);
+          var body = '';
+          response.on('data', chunk => body += chunk);
+          response.on('end', () => {
+            const data = JSON.parse(body);
+            expect(data['http://localhost:5000/'].body).to.be.equal('I will crash');
+            done();
+          });
+        });
+        query.end();
+      });
     });
   });
 
