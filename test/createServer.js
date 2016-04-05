@@ -69,6 +69,25 @@ describe('createServer', () => {
     });
   });
 
+  it('should forward data', (done) => {
+    server = createServer(['http://localhost:3000/']);
+    server.listen(4000, () => {
+      var options = url.parse('http://localhost:4000/');
+      options.method = 'POST';
+      var query = http.request(options);
+      query.write('yolo');
+      query.end();
+    });
+    s1.once('request', response => {
+      var body = '';
+      response.on('data', chunk =>  body += chunk);
+      response.on('end', () => {
+        expect(body).to.be.equal('yolo');
+        done();
+      });
+    });
+  });
+
   it('should forward over 2 services', (done) => {
     var t1,
       t2;
