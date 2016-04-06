@@ -148,23 +148,6 @@ describe('createServer', () => {
     });
   });
 
-  it.skip('should get receive status ENOTFOUND in JSON', done => {
-    server = createServer(['http://unexisting-url/']);
-    server.listen(4000, () => {
-      var options = url.parse('http://localhost:4000/');
-      var query = http.request(options, response => {
-        var body = '';
-        response.on('data', chunk => body += chunk);
-        response.on('end', () => {
-          const data = JSON.parse(body);
-          expect(data['http://unexisting-url/'].body.code).to.be.equal('ENOTFOUND');
-          done();
-        });
-      });
-      query.end();
-    });
-  });
-
   it('should get receive an answer even if the server crash during the request', done => {
     const child = child_process.fork(path.join(__dirname, '../util/crashingServer'), [], {
       silent: true
