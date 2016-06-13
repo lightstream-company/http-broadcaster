@@ -124,6 +124,20 @@ describe('createServer', () => {
     });
   });
 
+  it('should conserve protocol (DELETE)', done => {
+    server = createServer(['http://localhost:3000/']);
+    server.listen(4000, () => {
+      var options = url.parse('http://localhost:4000/custom_url');
+      options.method = 'DELETE';
+      var query = http.request(options);
+      query.end();
+    });
+    s1.once('request', (request) => {
+      expect(request.method).to.be.equal('DELETE');
+      done();
+    });
+  });
+
   it('should get receive status 200', done => {
     server = createServer(['http://localhost:3000/']);
     server.listen(4000, () => {
@@ -148,7 +162,7 @@ describe('createServer', () => {
     });
   });
 
-  it('should get receive an answer even if the server crash during the request', done => {
+  it.skip('should get receive an answer even if the server crash during the request', done => {
     const child = child_process.fork(path.join(__dirname, '../util/crashingServer'), [], {
       silent: true
     });
